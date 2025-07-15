@@ -26,10 +26,13 @@ def create_app(test_config=None):
     @app.route('/')
     def root():
         return 'This is the root!'
-    
+
     # a simple page taht says hello
     @app.route('/hello')
     def hello():
         return 'Hello, world!'
+    
+    from . import db
+    db.init_app(app)
     
     return app
