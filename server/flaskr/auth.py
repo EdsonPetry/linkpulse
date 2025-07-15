@@ -83,7 +83,22 @@ def load_logged_in_user():
             get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,))
         ).fetchone()
 
-@bp.route('/logout')
+
+@bp.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
+
+
+def login_required(view):
+    """
+    A dectorator function that checks if a user is loaded and redirects to the login page otherwise.
+    """
+
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+        return view(**kwargs)
+
+    return wrapped_view
