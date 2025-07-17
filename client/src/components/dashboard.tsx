@@ -12,10 +12,13 @@ export function Dashboard() {
     </header>
     <Separator className="h-px w-full bg-border" />
     <div className="grid grid-cols-2 grid-rows-3 gap-4 m-4">
-        <div className="h-full w-full"><LinkCard /></div>
-        <div className="h-full w-full"><LinkCard /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={true} /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={true} /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={true} /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={true} /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={true} /></div>
+        <div className="h-full w-full"><LinkCard className="h-full w-full" active={false} /></div>
     </div>
     </>
   )
 }
-
