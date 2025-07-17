@@ -34,7 +34,7 @@ def create():
         else:
             db = get_db()
             db.execute(
-                'INSERT INTO post (name, body, user_id)'
+                'INSERT INTO url (name, body, user_id)'
                 'VALUES (?, ?, ?)',
                 (name, body, g.user['id'])
             )
@@ -43,7 +43,7 @@ def create():
     
     return render_template('url/create.html')
 
-def get_url(id, check_author=True):
+def get_url(id, check_user=True):
     url = get_db().execute(
         'SELECT p.id, name, body, created, user_id, username'
         '   FROM url p JOIN user u ON p.user_id = u.id'
@@ -53,7 +53,7 @@ def get_url(id, check_author=True):
 
     if url is None:
         abort(404, f"URL id {id} doesn't exist")
-    if check_author and url['author_id'] != g.user['id']:
+    if check_user and url['user_id'] != g.user['id']:
         abort(403)
     
     return url
