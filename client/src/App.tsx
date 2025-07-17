@@ -5,7 +5,7 @@ import { Dashboard } from '@/components/dashboard'
 import { NewPulse } from '@/components/new-pulse'
 import { AllLinks } from "./components/all-links"
 import { Toaster } from "sonner"
-
+import { LlmPage } from "./components/llm-page"
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/new" element={<NewPulse />} />
           <Route path="/all" element={<AllLinks />} />
+          <Route path="/llm" element={<LlmPage/>} />
         </Routes>
       </main>
     </SidebarProvider>
