@@ -23,10 +23,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/')
-    def root():
-        return 'This is the root!'
-
     # a simple page taht says hello
     @app.route('/hello')
     def hello():
@@ -37,5 +33,9 @@ def create_app(test_config=None):
 
     from . import auth
     app.register_blueprint(auth.bp)
+
+    from . import url
+    app.register_blueprint(url.bp)
+    app.add_url_rule('/', endpoint='index')
     
     return app

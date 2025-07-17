@@ -12,6 +12,6 @@ CREATE TABLE url (
     user_id INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name TEXT NOT NULL,
-    url TEXT NOT NULL,
+    body TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );

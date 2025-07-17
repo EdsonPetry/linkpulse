@@ -78,27 +78,27 @@ header .action {
     border: 1px solid #377ba8;
 }
 
-.post>header {
+.urls>header {
     display: flex;
     align-items: flex-end;
     font-size: 0.85em;
 }
 
-.post>header>div:first-of-type {
+.urls>header>div:first-of-type {
     flex: auto;
 }
 
-.post>header h1 {
+.urls>header h1 {
     font-size: 1.5em;
     margin-bottom: 0;
 }
 
-.post .about {
+.urls .about {
     color: slategray;
     font-style: italic;
 }
 
-.post .body {
+.urls .body {
     white-space: pre-line;
 }
 
