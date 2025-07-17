@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button"
 import { AppSidebar } from "./components/app-sidebar"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { Separator } from "@radix-ui/react-separator"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { Routes, Route } from 'react-router-dom'
 import { Dashboard } from '@/components/dashboard'
 import { NewPulse } from '@/components/new-pulse'

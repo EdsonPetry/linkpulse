@@ -1,6 +1,3 @@
-import * as React from "react"
-import { SidebarTrigger } from "./ui/sidebar"
-import { Separator } from "@radix-ui/react-separator"
 import { RefreshCcw } from 'lucide-react';
 import { Bar, BarChart } from "recharts"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
@@ -11,7 +8,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
