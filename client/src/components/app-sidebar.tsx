@@ -1,5 +1,6 @@
 import { Gauge, Home, Plus, BotMessageSquare, Settings, Activity } from "lucide-react"
 import * as React from "react"
+import { Link } from 'react-router-dom'
 
 
 import {
@@ -18,12 +19,12 @@ import {
 const items = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/",
     icon: Home,
   },
   {
     title: "Create New",
-    url: "#",
+    url: "/new",
     icon: Plus,
   },
   {
@@ -49,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link to="/">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Activity className="size-4" />
                 </div>
@@ -57,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="font-medium">LinkPulse</span>
                   <span className="">v0.1.0</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -70,10 +71,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

@@ -1,0 +1,16 @@
+import * as React from "react"
+import { SidebarTrigger } from "./ui/sidebar"
+import { Separator } from "@radix-ui/react-separator"
+
+export function NewPulse() {
+  return (
+    <>
+    <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+      <SidebarTrigger className="-ml-1" />
+      <h1>Create New Pulse</h1>
+    </header>
+    <Separator className="h-px w-full bg-border" />
+    </>
+  )
+}
+
