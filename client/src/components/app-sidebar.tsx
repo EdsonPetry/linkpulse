@@ -29,17 +29,17 @@ const items = [
   },
   {
     title: "All Links",
-    url: "#",
+    url: "/all",
     icon: Gauge,
   },
   {
     title: "Talk to LLM",
-    url: "#",
+    url: "/llm",
     icon: BotMessageSquare,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ]

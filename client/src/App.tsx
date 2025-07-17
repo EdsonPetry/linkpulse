@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { Routes, Route } from 'react-router-dom'
 import { Dashboard } from '@/components/dashboard'
 import { NewPulse } from '@/components/new-pulse'
+import { AllLinks } from "./components/all-links"
 import { Toaster } from "sonner"
 
 
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/new" element={<NewPulse />} />
+          <Route path="/all" element={<AllLinks />} />
         </Routes>
       </main>
     </SidebarProvider>
