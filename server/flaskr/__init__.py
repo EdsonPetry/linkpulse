@@ -34,6 +34,11 @@ def create_app(test_config=None):
 
     from . import auth
 
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return auth.load_user(identity)
+
     app.register_blueprint(auth.bp, url_prefix="/api/auth")
 
     from . import urls

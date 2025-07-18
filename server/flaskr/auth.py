@@ -2,11 +2,11 @@ import functools
 
 from flask import (
     Blueprint,
-    g,
     request,
     session,
     url_for,
-    jsonify
+    jsonify,
+    g
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.exceptions import abort
@@ -22,12 +22,12 @@ from flask_jwt_extended import (
 
 bp = Blueprint("auth", __name__)
 
-@g.set_user_loader
+
 def load_user(user_id):
     """Callback function that jwt will use to look up corresponding user"""
-    return get_db().execute("SELECT * FROM user WHERE id = ?", (user_id)).fetchone()
+    return get_db().execute("SELECT * FROM user WHERE id = ?", (int(user_id),)).fetchone()
 
-@bp.route("/register", methods=("POST"))
+@bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
 
@@ -56,7 +56,7 @@ def register():
             error = f"User with username '{username}' or email '{email}' is already registered."
             return jsonify({"error": error}), 409
         except Exception as e:
-            error = "An unexpected error occured during registrition."
+            error = "An unexpected error occured during registration."
             print(f"Registration error: {e}")
             return jsonify({"error": error}), 500
         else:
@@ -66,7 +66,7 @@ def register():
     return jsonify({"error": error}), 400
 
 
-@bp.route("/login", methods=("POST"))
+@bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
 
@@ -76,23 +76,23 @@ def login():
     error = None
 
     user = db.execute(
-        "SELECT * FROM user WHERE username = ?", (username)
+        "SELECT * FROM user WHERE username = ?", (username,)
     ).fetchone()
 
     if user is None:
         error = "Incorrect username or password."
-    elif not check_password_hash(user["passsword_hash"], password):
+    elif not check_password_hash(user["password_hash"], password):
         error = "Incorrect username or password."
     
     if error is None:
-        access_token = create_access_token(identity=user["id"])
+        access_token = create_access_token(identity=str(user["id"]))
 
         return jsonify(access_token=access_token), 200
     
     return jsonify({"error": error}), 401
 
 
-@bp.route("/logout", methods=("POST"))
+@bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
     # TODO! Look into token blacklisting

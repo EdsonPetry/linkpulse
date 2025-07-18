@@ -1,0 +1,87 @@
+# VS Code REST Client requests
+#
+# Set the host for the API.
+@hostname = http://127.0.0.1:5000
+
+# Store the authentication token after login.
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MjgwMDk3MiwianRpIjoiZjAyNmIwZTEtMmEzMC00ZDlhLWIwOTgtZjk3MWQ5NzNiNzY0IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NTI4MDA5NzIsImNzcmYiOiIyN2QxOTNkZi1mMmZmLTRmZDQtOGU5OS1mYzhjNmMzN2YzOGEiLCJleHAiOjE3NTI4MDE4NzJ9.wwHu_jOM9oekvxJwZ-vDViaqUK2XNceQJlqoasAewaQ
+###
+# 1. Register a new user
+# This request creates a new user account.
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+# 2. Login to get an authentication token
+# This request logs in the user and saves the access token to the @token variable.
+# @name login
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password"
+}
+
+###
+@token = {{login.response.body.access_token}}
+
+###
+# 3. Get user profile
+# This request retrieves the profile of the currently authenticated user.
+GET {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+
+###
+# 4. Update user profile
+# This request updates the username and email of the authenticated user.
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "newtestuser",
+  "email": "newtest@example.com"
+}
+
+###
+# 5. Get all URLs for the user
+# This request retrieves all URLs associated with the authenticated user.
+GET {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+
+###
+# 6. Get a specific URL by ID
+# Replace '1' with a valid URL ID from your database.
+GET {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+
+###
+# 7. Update a specific URL by ID
+# Replace '1' with a valid URL ID from your database.
+PUT {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "https://updated-example.com",
+  "alias": "updated-example-alias"
+}
+
+###
+# 8. Delete a specific URL by ID
+# Replace '1' with a valid URL ID from your database.
+DELETE {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+
+###
+# 9. Logout
+# This request logs the user out.
+POST {{hostname}}/api/auth/logout
+Authorization: Bearer {{token}}

@@ -7,7 +7,7 @@ CREATE TABLE user (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE url (
@@ -22,6 +22,9 @@ CREATE TABLE url (
     is_active INTEGER NOT NULL DEFAULT 0 CHECK(is_active IN (0, 1)),
     last_status TEXT,
     last_response_time_ms INTEGER,
+    last_checked_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user (id)
 );
 

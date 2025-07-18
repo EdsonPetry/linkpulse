@@ -1,0 +1,82 @@
+# User Management API Tests
+# VS Code REST Client requests for user management endpoints
+
+@hostname = http://127.0.0.1:5000
+
+# First, login to get a token
+# @name login
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+@token = {{login.response.body.access_token}}
+
+###
+# Get current user profile
+GET {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+
+###
+# Get profile without authentication
+GET {{hostname}}/api/users/profile
+
+###
+# Get profile with invalid token
+GET {{hostname}}/api/users/profile
+Authorization: Bearer invalid-token-here
+
+###
+# Update user profile
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "updateduser",
+  "email": "updated@example.com"
+}
+
+###
+# Update profile with invalid email
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "updateduser2",
+  "email": "invalid-email-format"
+}
+
+###
+# Update profile with existing username (should fail)
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "existinguser",
+  "email": "newemail@example.com"
+}
+
+###
+# Update profile with partial data
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "username": "partiallydateduser"
+}
+
+###
+# Update profile with empty data
+PUT {{hostname}}/api/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
