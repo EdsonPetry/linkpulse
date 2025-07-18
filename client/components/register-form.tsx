@@ -30,6 +30,7 @@ export function RegisterForm({
         password
       });
       console.log("Success:", response.data);
+      window.location.href = "/login";
     } catch (error) {
       console.error("Error:", error);
     }
