@@ -1,3 +1,7 @@
+"use client"
+
+import React, { useState, FormEvent } from "react";
+import axios from "axios";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +18,26 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [username, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/api/auth/login", {
+        username,
+        password,
+      });
+
+      const { access_token } = response.data;
+      localStorage.setItem("token", access_token);
+      window.location.href = "/dashboard";
+    } catch (err: any) {
+      setError("Invalid email or password");
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -24,15 +48,17 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="username"
+                  type="username"
+                  placeholder="username"
                   required
+                  value={username}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
@@ -45,8 +71,15 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
                   Login
