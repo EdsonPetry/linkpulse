@@ -1,7 +1,4 @@
 "use client"
-
-import React, { useState, FormEvent } from "react";
-import axios from "axios";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,28 +10,29 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import axios from "axios";
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [username, setEmail] = useState("");
+  const [username, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://127.0.0.1:5000/api/auth/login", {
+      const response = await axios.post("http://127.0.0.1:5000/api/auth/register", {
         username,
-        password,
+        email,
+        password
       });
-
-      const { access_token } = response.data;
-      localStorage.setItem("token", access_token);
-      window.location.href = "/dashboard";
-    } catch (err: any) {
-      setError("Invalid email or password");
+      console.log("Success:", response.data);
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
@@ -42,22 +40,33 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Register your account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to register your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Name</Label>
                 <Input
                   id="username"
-                  type="username"
+                  type="text"
                   placeholder="username"
                   required
                   value={username}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -79,13 +88,9 @@ export function LoginForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
-                  Login
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
+                  Register
                 </Button>
               </div>
             </div>
