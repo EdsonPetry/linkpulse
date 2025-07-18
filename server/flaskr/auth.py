@@ -2,103 +2,98 @@ import functools
 
 from flask import (
     Blueprint,
-    flash,
-    g,
-    redirect,
-    render_template,
     request,
     session,
     url_for,
+    jsonify,
+    g
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from werkzeug.exceptions import abort
 from flaskr.db import get_db
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+    JWTManager
+)
+
+bp = Blueprint("auth", __name__)
 
 
-@bp.route("/register", methods=("GET", "POST"))
+def load_user(user_id):
+    """Callback function that jwt will use to look up corresponding user"""
+    return get_db().execute("SELECT * FROM user WHERE id = ?", (int(user_id),)).fetchone()
+
+@bp.route("/register", methods=["POST"])
 def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        db = get_db()
-        error = None
+    data = request.get_json()
 
-        if not username:
-            error = "Username is required."
-        elif not password:
-            error = "Password is required."
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+    db = get_db()
+    error = None
 
-        if error is None:
-            try:
-                db.execute(
-                    "INSERT INTO user (username, password) VALUES (?, ?)",
-                    (username, generate_password_hash(password)),
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"User {username} is already registered."
-            else:
-                return redirect(url_for("auth.login"))
-        flash(error)
-    return render_template("auth/register.html")
+    if not username:
+        error = "Username is required."
+    elif not email:
+        error = "Email is required."
+    elif not password:
+        error = "Password is required."
+    
+    if error is None:
+        try:
+            cursor = db.execute(
+                "INSERT INTO user (username, email, password_hash) VALUES (?, ?, ?)",
+                (username, email, generate_password_hash(password=password)),
+            )
+            db.commit()
+            new_user_id = cursor.lastrowid
+        except db.IntegrityError:
+            error = f"User with username '{username}' or email '{email}' is already registered."
+            return jsonify({"error": error}), 409
+        except Exception as e:
+            error = "An unexpected error occured during registration."
+            print(f"Registration error: {e}")
+            return jsonify({"error": error}), 500
+        else:
+            return jsonify({"message": "USer register successfully", "user_id": new_user_id}), 201
+    
+    # validation error
+    return jsonify({"error": error}), 400
 
 
-@bp.route("/login", methods=("GET", "POST"))
+@bp.route("/login", methods=["POST"])
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        db = get_db()
-        error = None
-        user = db.execute(
-            "SELECT * FROM user WHERE username = ?", (username,)
-        ).fetchone()
+    data = request.get_json()
 
-        if user is None:
-            error = "Incorrect username."
-        elif not check_password_hash(user["password"], password):
-            error = "Incorrect password."
+    username = data.get("username")
+    password = data.get("password")
+    db = get_db()
+    error = None
 
-        if error is None:
-            session.clear()
-            session["user_id"] = user["id"]
-            return redirect(url_for("index"))
+    user = db.execute(
+        "SELECT * FROM user WHERE username = ?", (username,)
+    ).fetchone()
 
-        flash(error)
+    if user is None:
+        error = "Incorrect username or password."
+    elif not check_password_hash(user["password_hash"], password):
+        error = "Incorrect username or password."
+    
+    if error is None:
+        access_token = create_access_token(identity=str(user["id"]))
 
-    return render_template("auth/login.html")
-
-
-@bp.before_app_request
-def load_logged_in_user():
-    """Checks if a user id is stored in the session and the gets the user's data from the database."""
-    user_id = session.get("user_id")
-
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = (
-            get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,))
-        ).fetchone()
+        return jsonify(access_token=access_token), 200
+    
+    return jsonify({"error": error}), 401
 
 
-@bp.route("/logout")
+@bp.route("/logout", methods=["POST"])
+@jwt_required()
 def logout():
-    session.clear()
-    return redirect(url_for("index"))
-
-
-def login_required(view):
-    """
-    A dectorator function that checks if a user is loaded and redirects to the login page otherwise.
-    """
-
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-        return view(**kwargs)
-
-    return wrapped_view
+    # TODO! Look into token blacklisting
+    return jsonify({"message": "Succesfully logged out"}), 200

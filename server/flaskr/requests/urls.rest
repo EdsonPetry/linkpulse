@@ -1,0 +1,151 @@
+# URL Management API Tests
+# VS Code REST Client requests for URL monitoring endpoints
+
+@hostname = http://127.0.0.1:5000
+
+# First, login to get a token
+# @name login
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+@token = {{login.response.body.access_token}}
+
+###
+# Create a new URL to monitor
+# @name createUrl
+POST {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "https://google.com",
+  "alias": "google",
+  "check_interval_seconds": 300,
+  "http_method": "GET",
+  "expected_status_code": 200,
+  "is_active": true
+}
+
+###
+# Create URL with minimal fields
+POST {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "https://httpbin.org/status/200",
+  "alias": "httpbin-test"
+}
+
+###
+# Create URL with invalid URL format
+POST {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "not-a-valid-url",
+  "alias": "invalid-url"
+}
+
+###
+# Get all URLs for the authenticated user
+GET {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+
+###
+# Get all URLs without authentication
+GET {{hostname}}/api/urls/
+
+###
+# Get a specific URL by ID (replace 1 with actual ID)
+GET {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+
+###
+# Get non-existent URL
+GET {{hostname}}/api/urls/999
+Authorization: Bearer {{token}}
+
+###
+# Update a URL by ID
+PUT {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "https://updated-example.com",
+  "alias": "updated-example",
+  "check_interval_seconds": 600,
+  "http_method": "POST",
+  "expected_status_code": 201,
+  "expected_content_match": "Updated content",
+  "is_active": false
+}
+
+###
+# Partial update of URL
+PUT {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "alias": "partially-updated-example",
+  "is_active": true
+}
+
+###
+# Update URL with invalid data
+PUT {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "invalid-url-format",
+  "check_interval_seconds": -1
+}
+
+###
+# Update non-existent URL
+PUT {{hostname}}/api/urls/999
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "alias": "non-existent"
+}
+
+###
+# Delete a URL by ID
+DELETE {{hostname}}/api/urls/1
+Authorization: Bearer {{token}}
+
+###
+# Delete non-existent URL
+DELETE {{hostname}}/api/urls/999
+Authorization: Bearer {{token}}
+
+###
+# Try to delete URL without authentication
+DELETE {{hostname}}/api/urls/1
+
+###
+# Create URL for testing edge cases
+POST {{hostname}}/api/urls/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "url": "https://httpbin.org/delay/2",
+  "alias": "slow-endpoint",
+  "check_interval_seconds": 60,
+  "http_method": "GET",
+  "expected_status_code": 200,
+  "is_active": true
+}

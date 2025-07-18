@@ -1,0 +1,85 @@
+# Authentication API Tests
+# VS Code REST Client requests for authentication endpoints
+
+@hostname = http://127.0.0.1:5000
+
+###
+# Register a new user
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+# Register with invalid email
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+###
+# Register with missing fields
+POST {{hostname}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "password": "password123"
+}
+
+###
+# Login with valid credentials
+# @name login
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+# Store token from login response
+@token = {{login.response.body.access_token}}
+
+###
+# Login with invalid credentials
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "wrongpassword"
+}
+
+###
+# Login with non-existent user
+POST {{hostname}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "nonexistent",
+  "password": "password123"
+}
+
+###
+# Logout (requires authentication)
+POST {{hostname}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+###
+# Try to logout without token
+POST {{hostname}}/api/auth/logout
+
+###
+# Try to logout with invalid token
+POST {{hostname}}/api/auth/logout
+Authorization: Bearer invalid-token-here
