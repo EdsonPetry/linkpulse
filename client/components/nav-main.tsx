@@ -11,6 +11,19 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
 export function NavMain({
   items,
 }: {
@@ -25,21 +38,64 @@ export function NavMain({
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-            >
-              <IconCirclePlusFilled />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Add URL</Button>
+              </DialogTrigger>
+              <DialogContent
+                className="sm:max-w-md"
+                style={{
+                  backgroundColor: "white",
+                  padding: "2rem",
+                  zIndex: 1000,
+                }}
+              >
+                <DialogHeader>
+                  <DialogTitle>Add New URL</DialogTitle>
+                  <DialogDescription>
+                    Enter the details for the URL you'd like to monitor.
+                  </DialogDescription>
+                </DialogHeader>
+                <form
+                  className="flex flex-col gap-4"
+                  onSubmit={async (e) => {
+                    e.preventDefault()
+                    const form = e.currentTarget
+                    const name = (form.elements.namedItem("name") as HTMLInputElement).value
+                    const url = (form.elements.namedItem("url") as HTMLInputElement).value
+                    const frequency = (form.elements.namedItem("frequency") as HTMLInputElement).value
+                    const axios = (await import("axios")).default
+                    await axios.post("/api/urls", {
+                      name,
+                      url,
+                      frequency: Number(frequency),
+                    })
+                    const closeBtn = form.querySelector('[data-dialog-close]') as HTMLElement
+                    closeBtn?.click()
+                  }}
+                >
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" name="name" placeholder="e.g. My Site" required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="url">URL</Label>
+                    <Input id="url" name="url" type="url" placeholder="https://example.com" required />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="frequency">Frequency (minutes)</Label>
+                    <Input id="frequency" name="frequency" type="number" min="1" required />
+                  </div>
+                  <DialogFooter className="sm:justify-start mt-4">
+                    <DialogClose asChild>
+                      <Button type="submit" variant="default" data-dialog-close>
+                        Submit
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

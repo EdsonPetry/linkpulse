@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import axios from "axios"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -32,7 +33,7 @@ import {
 
 export const description = "An interactive area chart"
 
-const chartData = [
+const chartDataNew = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
   { date: "2024-04-02", desktop: 97, mobile: 180 },
   { date: "2024-04-03", desktop: 167, mobile: 120 },
@@ -142,6 +143,7 @@ const chartConfig = {
 
 export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
+  const [chartData, setChartData] = React.useState<any[]>([])
   const [timeRange, setTimeRange] = React.useState("90d")
 
   React.useEffect(() => {
@@ -149,6 +151,14 @@ export function ChartAreaInteractive() {
       setTimeRange("7d")
     }
   }, [isMobile])
+
+  React.useEffect(() => {
+    setChartData(chartDataNew);
+    // axios
+    //   .get("/api/chart-data")
+    //   .then((res) => setChartData(res.data))
+    //   .catch((err) => console.error("Error fetching chart data", err))
+  }, [])
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date)

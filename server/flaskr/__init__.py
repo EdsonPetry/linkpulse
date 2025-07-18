@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 
 # application factory function
@@ -12,6 +13,7 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
         JWT_SECRET_KEY="dev",
     )
+    CORS(app)
 
     if test_config is None:
         # load the instance config if it exists, when not testing
@@ -29,7 +31,7 @@ def create_app(test_config=None):
     jwt = JWTManager(app)
 
     from . import db
-
+    
     db.init_app(app)
 
     from . import auth
