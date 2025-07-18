@@ -1,7 +1,8 @@
 "use client"
 
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
-
+import { useState } from "react"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import {
   SidebarGroup,
@@ -24,78 +25,105 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export function NavMain({
-  items,
-}: {
+export function NavMain({items,}: {
   items: {
     title: string
     url: string
     icon?: Icon
   }[]
 }) {
+  const [open, setOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    url: "",
+    alias: "",
+    check_interval_minutes: "",
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.post("http://127.0.0.1:5000/api/urls/", {
+        url: formData.url,
+        alias: formData.alias,
+        check_interval_seconds: parseInt(formData.check_interval_minutes) * 60,
+        http_method: "GET",
+        expected_status_code: 200,
+        expected_content_match: "",
+        is_active: true,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      setOpen(false)
+    } catch (error) {
+      console.error("Error creating URL:", error)
+    }
+  }
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">Add URL</Button>
-              </DialogTrigger>
-              <DialogContent
-                className="sm:max-w-md"
-                style={{
-                  backgroundColor: "white",
-                  padding: "2rem",
-                  zIndex: 1000,
-                }}
-              >
-                <DialogHeader>
-                  <DialogTitle>Add New URL</DialogTitle>
-                  <DialogDescription>
-                    Enter the details for the URL you'd like to monitor.
-                  </DialogDescription>
-                </DialogHeader>
-                <form
-                  className="flex flex-col gap-4"
-                  onSubmit={async (e) => {
-                    e.preventDefault()
-                    const form = e.currentTarget
-                    const name = (form.elements.namedItem("name") as HTMLInputElement).value
-                    const url = (form.elements.namedItem("url") as HTMLInputElement).value
-                    const frequency = (form.elements.namedItem("frequency") as HTMLInputElement).value
-                    const axios = (await import("axios")).default
-                    await axios.post("/api/urls", {
-                      name,
-                      url,
-                      frequency: Number(frequency),
-                    })
-                    const closeBtn = form.querySelector('[data-dialog-close]') as HTMLElement
-                    closeBtn?.click()
-                  }}
-                >
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" name="name" placeholder="e.g. My Site" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="url">URL</Label>
-                    <Input id="url" name="url" type="url" placeholder="https://example.com" required />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="frequency">Frequency (minutes)</Label>
-                    <Input id="frequency" name="frequency" type="number" min="1" required />
-                  </div>
-                  <DialogFooter className="sm:justify-start mt-4">
-                    <DialogClose asChild>
-                      <Button type="submit" variant="default" data-dialog-close>
-                        Submit
-                      </Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button className="w-full" variant="default">Create URL</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New URL</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="url">URL</Label>
+              <Input
+                id="url"
+                name="url"
+                type="text"
+                value={formData.url}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="alias">Alias</Label>
+              <Input
+                id="alias"
+                name="alias"
+                type="text"
+                value={formData.alias}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Label htmlFor="check_interval_minutes">Frequency (minutes)</Label>
+              <Input
+                id="check_interval_minutes"
+                name="check_interval_minutes"
+                type="number"
+                min={1}
+                value={formData.check_interval_minutes}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit">Submit</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>

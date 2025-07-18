@@ -108,3 +108,43 @@ def delete(id):
     db.commit()
 
     return jsonify({"message": f"URL {id} delete successfully"}), 200
+
+@bp.route("/", methods=["POST"])
+@jwt_required()
+def add_url():
+    data = request.get_json()
+    required_fields = ["url", "check_interval_seconds"]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"{field} is required."}), 400
+
+    db = get_db()
+    current_user_id = int(get_jwt_identity())
+
+    try:
+        db.execute(
+            """
+            INSERT INTO url (
+                url, alias, check_interval_seconds, http_method,
+                expected_status_code, expected_content_match,
+                is_active, user_id, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """,
+            (
+                data["url"],
+                data.get("alias", ""),
+                data["check_interval_seconds"],
+                data.get("http_method", "GET"),
+                data.get("expected_status_code", 200),
+                data.get("expected_content_match", ""),
+                data.get("is_active", True),
+                current_user_id,
+            )
+        )
+        db.commit()
+        return jsonify({"message": "URL created successfully."}), 201
+    except Exception as e:
+        print(f"Error inserting URL: {e}")
+        return jsonify({"error": "Failed to create URL"}), 500
