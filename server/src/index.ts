@@ -1,8 +1,13 @@
 import express from 'express'
+import morgan from 'morgan'
 import { supabase } from './supabaseClient'
 
-const app = express()
+const app = express();
 const port = 3000
+
+// MiDDLEWARE
+app.use(express.json());
+app.use(morgan('dev'));
 
 // Test route to check if server is running
 app.get('/', (req, res) => {

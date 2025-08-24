@@ -5,7 +5,12 @@
   "private": true,
   "devDependencies": {
     "@types/bun": "^1.2.20",
-    "ts-node": "^10.9.2"
+    "@types/morgan": "^1.9.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  },
+  "scripts": {
+    "start": "bun --hot run src/index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.9.2"
@@ -15,6 +20,7 @@
     "@types/express": "^5.0.3",
     "bullmq": "^5.57.0",
     "express": "^5.1.0",
+    "morgan": "^1.10.1",
     "supabase": "^2.34.3"
   }
 }
