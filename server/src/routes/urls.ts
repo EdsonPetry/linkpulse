@@ -1,6 +1,5 @@
-// TODO! Build URL routing
+import { Router } from "express";
 
-// TODO! Import Router from Express and create new router instance
+const router = Router();
 
-// TODO! Define URL-related endpoints like POST and GET
-
+export default router;

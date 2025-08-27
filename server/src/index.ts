@@ -1,6 +1,7 @@
 import express from 'express'
 import morgan from 'morgan'
-import { supabase } from './supabaseClient'
+import authRouter from './routes/auth';
+
 
 const app = express();
 const port = 3000
@@ -15,18 +16,7 @@ app.get('/', (req, res) => {
 })
 
 // Test route to check db connection
-app.get('/api/test-db', async (require, res) => {
-    const { data, error } = await supabase
-        .from('urls')
-        .select('*')
-        .limit(1)
-
-    if (error) {
-        return res.status(500).json({ error: error.message })
-    }
-
-    res.json({ success: true, data: data })
-})
+app.use('/api/v1/auth', authRouter);
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
