@@ -23,5 +23,5 @@ export async function loginUser (email: string, password: string) {
         throw new Error(error.message);
     }
 
-    return data.user
+    return data.session
 }
